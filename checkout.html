@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <title>Checkout</title>
+
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/fontawesome.css">
+    <link rel="stylesheet" href="assets/css/website-framework.css">
+    <link rel="stylesheet" href="assets/css/owl.css">
+    <link rel="stylesheet" href="assets/css/animate.css">
+    
+</head>
+
+
+<body>
+    <header class="header-area header-sticky">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <nav class="main-nav">
+                        <a href="index.html" class="logo">
+                            <img src="assets/images/logo no bg.png" alt="" style="width: 158px;">
+                            <h6>TropiCoir</h6>
+                        </a>
+                        <ul class="nav">
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="shop.html">Our Shop</a></li>
+                            <li><a href="checkout.html" class="active">Checkout</a></li>
+                            <li><a href="sign-in.html" >Sign In</a></li>
+                        </ul>
+                        <a class='menu-trigger'>
+                            <span>Menu</span>
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="page-heading header-text">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h3>checkout</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="checkout-container p-4 shadow-lg rounded">
+                    
+                    <div id="cart-summary"></div>
+                    <h5>Total: <span id="total-price">₱0.00</span></h5>
+                    <h5>Billing Information</h5>
+                    <input type="text" class="form-control mb-2" placeholder="Your Name">
+                    <input type="email" class="form-control mb-2" placeholder="Your Email">
+                    <input type="text" class="form-control mb-2" placeholder="Your Address">
+                    <input type="text" class="form-control mb-2" placeholder="Your Number">
+                    <h5>Payment Method</h5>
+                    <select class="form-control mb-3" id="payment-method">
+                        <option value="debit">Debit Card</option>
+                        <option value="paypal">PayPal</option>
+                        <option value="gcash">GCash</option>
+                    </select>
+                    <button class="btn btn-success w-100" id="complete-purchase">Complete Purchase</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            renderCartSummary(cart);
+        });
+    
+        // Function to render the cart summary
+        function renderCartSummary(cart) {
+            let cartSummary = document.getElementById("cart-summary");
+            let totalPrice = 0;
+    
+            // If cart is empty
+            if (cart.length === 0) {
+                cartSummary.innerHTML = "<p>Your cart is empty.</p>";
+                document.getElementById("total-price").innerText = `₱0.00`;
+                return;
+            }
+    
+            cartSummary.innerHTML = "";
+    
+            cart.forEach((item, index) => {
+                let itemTotal = item.price * item.quantity;
+                totalPrice += itemTotal;
+    
+                let itemElement = document.createElement("div");
+                itemElement.classList.add(
+                    "d-flex",
+                    "justify-content-between",
+                    "align-items-center",
+                    "mb-2",
+                    "border",
+                    "p-2",
+                    "rounded"
+                );
+    
+                itemElement.innerHTML = `
+                    <div>
+                        <p class="mb-1"><strong>${item.name}</strong></p>
+                        <p class="mb-0">₱${item.price.toFixed(2)} each</p>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <button class="btn btn-sm btn-secondary" onclick="changeQuantity(${index}, -1)">-</button>
+                        <span class="mx-2">${item.quantity}</span>
+                        <button class="btn btn-sm btn-secondary" onclick="changeQuantity(${index}, 1)">+</button>
+                    </div>
+                    <div>
+                        <p class="mb-0">₱${itemTotal.toFixed(2)}</p>
+                        <button class="btn btn-danger btn-sm mt-1" onclick="removeFromCart(${index})">Remove</button>
+                    </div>
+                `;
+                cartSummary.appendChild(itemElement);
+            });
+    
+            document.getElementById("total-price").innerText = `₱${totalPrice.toFixed(2)}`;
+        }
+    
+        // Function to increase or decrease quantity
+        function changeQuantity(index, change) {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    
+            if (cart[index].quantity + change > 0) {
+                cart[index].quantity += change;
+            } else {
+                cart.splice(index, 1);
+            }
+    
+            localStorage.setItem("cart", JSON.stringify(cart));
+            renderCartSummary(cart);
+        }
+    
+        // Function to remove item from cart
+        function removeFromCart(index) {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            cart.splice(index, 1);
+    
+            localStorage.setItem("cart", JSON.stringify(cart));
+            renderCartSummary(cart);
+        }
+    
+        // Handle purchase completion
+        document.getElementById("complete-purchase").addEventListener("click", function () {
+            let paymentMethod = document.getElementById("payment-method").value;
+            alert(`Thank you for purchasing!`);
+    
+            // Clear cart after purchase
+            localStorage.removeItem("cart");
+            window.location.href = "index.html";
+        });
+    </script>
+    
+
+    <footer>
+        <div class="container">
+            <div class="col-lg-12">
+                <p>For educational purposes only, and no copyright infringement is intended.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/js/isotope.min.js"></script>
+    <script src="assets/js/owl-carousel.js"></script>
+    <script src="assets/js/counter.js"></script>
+    <script src="assets/js/custom.js"></script>
+</body>
+</html>
